@@ -1,0 +1,12 @@
+clear;
+clc;
+
+dmin = 5;
+
+// (s+1) <= dmin → number of errors that can be detected (s)
+s = dmin - 1;
+printf("i) Number of detected errors\n\n\t s <= %d", s);
+
+// (2t + 1) <= dmin → number of errors that can be corrected (t)
+t = (dmin - 1) / 2;
+printf("\n\nii) Number of corrected errors\n\n\t t <= %d\n", t);
