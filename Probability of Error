@@ -1,0 +1,33 @@
+// Probability-of-error check using Chebyshev (Tchebycheff) inequality
+// clc; // optional: clears console
+
+// Given
+P_e = 1e-4;        // error probability (Pe)
+N   = 4*10^5;      // number of experiments
+E   = 50*1e-4;     // E = 50 * 10^-4 = 0.005
+
+// Chebyshev bound (using approximation Var(p) ≈ Pe/N for small Pe)
+Tc_RHS = P_e / (N * E^2);     // <= P(|p - Pe| >= E)
+
+// Convert to percentage
+Tc_RHS_percent = Tc_RHS * 100; // percent
+
+// More accurate bound using Var(p) = Pe*(1-Pe)/N
+Tc_RHS_exactVar = (P_e * (1 - P_e)) / (N * E^2);
+Tc_RHS_exactVar_percent = Tc_RHS_exactVar * 100;
+
+// Display results
+// Display results in your desired format
+mprintf("P_e  = %f\n", P_e);
+mprintf("N  = %f\n", N);
+mprintf("E  = %f\n", E);
+mprintf("Tc_RHS  = %f\n", Tc_RHS);
+mprintf("Tc_RHSper  = %E\n", Tc_RHS_percent);
+
+mprintf("\nThe probability of estimated probability of error p does not differ ");
+mprintf("from P_e by more than 50%% is less than equal to %f", Tc_RHS);
+mprintf(" or P(|p-10^-4|>=0.5*10^-2)<= %f = %E%%\n", Tc_RHS, Tc_RHS_percent);
+
+
+// Interpretation
+disp('Interpretation: The probability P(|p - Pe| >= 0.005) is at most the above value.');
