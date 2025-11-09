@@ -1,0 +1,16 @@
+// Information capacity of telephone
+// Example 9.56, page no. 444
+
+clear;
+clc;
+
+B = 3.4 * 10^3;      // Bandwidth in Hz
+SNR = 30;            // Signal-to-Noise Ratio in dB
+
+SN = 10^(SNR/10);    // Convert SNR from dB to ratio
+C = B * log2(1 + SN); // Information capacity (bps)
+
+// Display results
+mprintf("SNR  = %g\n", SNR);
+mprintf("C  = %f\n", C);
+mprintf("\nInformation capacity of telephone is \n\tC = %.2f kbps\n", C/1000);
