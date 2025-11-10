@@ -1,0 +1,57 @@
+//DC motor interfacing with 8051 hardware
+#include <reg51.h>
+
+sbit motor_pin1 = P1^0;     // Motor pin 1 connected to P1.0
+sbit motor_pin2 = P1^1;     // Motor pin 2 connected to P1.1
+sbit button_reverse = P2^0; // Button for reversing direction connected to P2.0
+
+bit motor_direction = 0;    // 0 = forward, 1 = reverse
+
+// Normal delay function
+void delay(unsigned int time) {
+    unsigned int i, j;
+    for (i = 0; i < time; i++)
+        for (j = 0; j < 1275; j++);
+}
+
+// Longer delay for simulating low speed
+void low_speed_delay(unsigned int time) {
+    unsigned int i, j;
+    for (i = 0; i < time; i++)
+        for (j = 0; j < 100000; j++);
+}
+
+void main() {
+    // Initialize motor in forward direction
+    motor_pin1 = 1;
+    motor_pin2 = 0;
+
+    while (1) {
+        // Check for button press to reverse motor
+        if (button_reverse == 0) {  // Button pressed (active low)
+            delay(50);              // Debounce delay
+
+            while (button_reverse == 0);  // Wait until button released
+
+            motor_direction = !motor_direction;  // Toggle direction
+
+            if (motor_direction == 1) {
+                motor_pin1 = 0;
+                motor_pin2 = 1;   // Reverse direction
+            } else {
+                motor_pin1 = 1;
+                motor_pin2 = 0;   // Forward direction
+            }
+            delay(50);
+        }
+
+        // Simulate low speed by ON and OFF delays
+        motor_pin1 = 1;
+        motor_pin2 = 0;
+        low_speed_delay(10);    // Motor ON delay
+
+        motor_pin1 = 0;
+        motor_pin2 = 0;         // Motor OFF
+        low_speed_delay(10);    // Motor OFF delay
+    }
+}
