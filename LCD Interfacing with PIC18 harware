@@ -1,0 +1,94 @@
+//LCD Interfacing with PIC18
+#include <p18f4550.h>
+
+// Configuration Bits
+#pragma config FOSC = HS       // High-Speed Oscillator
+#pragma config WDT = OFF       // Watchdog Timer Disabled
+#pragma config LVP = OFF       // Low-Voltage Programming Disabled
+#pragma config PBADEN = OFF    // PORTB<4:0> as Digital I/O on Reset
+
+// Define LCD control pins
+#define RS LATCbits.LATC0
+#define RW LATCbits.LATC1
+#define EN LATCbits.LATC2
+
+// Function Prototypes
+void LCD_data(unsigned char data);
+void LCD_cmd(unsigned char cmd);
+void LCD_init(void);
+void delay(unsigned int time);
+
+void main(void) {
+    TRISD = 0x00;   // PORTD as output for LCD data
+    TRISC = 0x00;   // PORTC as output for control lines
+
+    LATD = 0x00;    // Clear PORTD
+    LATC = 0x00;    // Clear PORTC
+
+    LCD_init();     // Initialize LCD
+
+    LCD_cmd(0x80);  // Move cursor to beginning of first line
+
+    // Display "LCDPIC18" on LCD
+    LCD_data('L');
+    delay(25);
+    LCD_data('C');
+    delay(25);
+    LCD_data('D');
+    delay(25);
+    LCD_data('P');
+    delay(25);
+    LCD_data('I');
+    delay(25);
+    LCD_data('C');
+    delay(25);
+    LCD_data('1');
+    delay(25);
+    LCD_data('8');
+
+    while (1);      // Infinite loop
+}
+
+// Send a command to the LCD
+void LCD_cmd(unsigned char cmd) {
+    LATD = cmd;     // Send command to data lines
+    RS = 0;         // RS = 0 → command mode
+    RW = 0;         // RW = 0 → write mode
+    EN = 1;         // Enable LCD
+    delay(2);
+    EN = 0;         // Disable LCD
+    delay(2);
+}
+
+// Send data (a character) to the LCD
+void LCD_data(unsigned char data) {
+    LATD = data;    // Send data to data lines
+    RS = 1;         // RS = 1 → data mode
+    RW = 0;         // RW = 0 → write mode
+    EN = 1;         // Enable LCD
+    delay(2);
+    EN = 0;         // Disable LCD
+    delay(2);
+}
+
+// Initialize LCD in 8-bit mode
+void LCD_init(void) {
+    delay(15);              // Wait for LCD to power up
+    LCD_cmd(0x38);          // 8-bit, 2-line, 5x7 font
+    delay(5);
+    LCD_cmd(0x01);          // Clear display
+    delay(5);
+    LCD_cmd(0x06);          // Entry mode: increment cursor
+    delay(2);
+    LCD_cmd(0x0C);          // Display ON, Cursor OFF
+    delay(2);
+    LCD_cmd(0x80);          // Move cursor to beginning of first line
+    delay(2);
+}
+
+// Simple delay routine
+void delay(unsigned int time) {
+    unsigned int i, j;
+    for (i = 0; i < time; i++)
+        for (j = 0; j < 275; j++);
+}
