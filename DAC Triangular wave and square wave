@@ -1,0 +1,57 @@
+//Triangular wave
+#include <reg51.h>
+
+void delay(unsigned int time);
+
+void main()
+{
+  unsigned char count;
+  while(1)
+  {
+    for(count = 0x00; count < 0xFF; count++)
+    {
+      P0 = count;
+      delay(10);
+    }
+
+    for(count = 0xFF; count > 0x00; count--)
+    {
+      P0 = count;
+      delay(10);
+    }
+  }
+}
+
+void delay(unsigned int time)
+{
+  unsigned int i, j;
+  for(i = 0; i < time; i++)
+  {
+    for(j = 0; j < 100; j++)
+    {
+    }
+  }
+}
+
+//SQUARE WAVE
+#include <reg51.h>
+
+void delay(unsigned int time);
+
+void main()
+{
+    while(1)
+    {
+        P0 = 0xFF;   // Output HIGH to DAC or port
+        delay(10);   // Wait
+        P0 = 0x00;   // Output LOW to DAC or port
+        delay(10);   // Wait
+    }
+}
+
+void delay(unsigned int time)
+{
+    int i, j;
+    for(i = 0; i < time; i++)
+        for(j = 0; j < 160; j++);  // Software delay
+}
