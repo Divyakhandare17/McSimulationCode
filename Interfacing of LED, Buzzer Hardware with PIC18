@@ -1,0 +1,77 @@
+//Interfacing of LED, Buzzer with PIC18
+#include <p18f4550.h>
+
+// Configuration bits
+#pragma config FOSC = HS       // High-speed crystal
+#pragma config WDT = OFF       // Watchdog Timer off
+#pragma config LVP = OFF       // Low-voltage programming off
+#pragma config PBADEN = OFF    // PORTB<4:0> as digital I/O on reset
+
+// Define pins
+#define lrbit PORTBbits.RB4    // Switch 0
+#define rlbit PORTBbits.RB5    // Switch 1
+#define buzzer PORTCbits.RC2
+#define relay  PORTCbits.RC1
+
+// Delay function
+void MsDelay(unsigned int time)
+{
+    unsigned int i, j;
+    for (i = 0; i < time; i++)
+        for (j = 0; j < 275; j++);
+}
+
+void main(void)
+{
+    unsigned char val = 0;
+
+    INTCON2bits.RBPU = 0;   // Enable PORTB internal pull-ups
+    ADCON1 = 0x0F;          // All ports as digital
+
+    TRISBbits.TRISB4 = 1;   // RB4 as input
+    TRISBbits.TRISB5 = 1;   // RB5 as input
+    TRISCbits.TRISC1 = 0;   // RC1 as output (relay)
+    TRISCbits.TRISC2 = 0;   // RC2 as output (buzzer)
+    TRISD = 0x00;           // PORTD as output
+
+    PORTD = 0x01;           // Start with first LED ON
+    buzzer = 0;
+    relay = 0;
+
+    while (1)
+    {
+        // Check left-to-right button
+        if (!lrbit)      // Active low switch
+            val = 1;
+
+        // Check right-to-left button
+        if (!rlbit)
+            val = 2;
+
+        // LEFT to RIGHT LED shift (and buzzer/relay ON)
+        if (val == 1)
+        {
+            buzzer = 1;
+            relay = 1;
+
+            PORTD = PORTD >> 1;   // Shift right
+            if (PORTD == 0x00)
+                PORTD = 0x80;     // Restart from leftmost LED
+
+            MsDelay(250);
+        }
+
+        // RIGHT to LEFT LED shift (and buzzer/relay OFF)
+        if (val == 2)
+        {
+            buzzer = 0;
+            relay = 0;
+
+            PORTD = PORTD << 1;   // Shift left
+            if (PORTD == 0x00)
+                PORTD = 0x01;     // Restart from rightmost LED
+
+            MsDelay(250);
+        }
+    }
+}
