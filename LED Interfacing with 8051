@@ -1,0 +1,47 @@
+//The program for blinking of 8 LED’s interfaced with port P1 of 8051.
+#include <reg51.h>
+
+void Delay(unsigned int time);
+
+void main()
+{
+    P1 = 0x00;       // Initialize port P1
+    while(1)
+    {
+        P1 = 0xFF;   // Output HIGH (all bits 1)
+        Delay(250);  // Delay
+        P1 = 0x00;   // Output LOW (all bits 0)
+        Delay(250);  // Delay
+    }
+}
+
+void Delay(unsigned int time)
+{
+    int i, j;
+    for(i = 0; i < time; i++)
+        for(j = 0; j < 165; j++);  // Software delay
+}
+
+//The program for blinking of 8 LED’s interfaced with port P1 of 8051.
+#include <reg51.h>
+
+void Delay(unsigned int time); 
+
+void main()
+{
+    while(1)
+    {
+        P1 = 0xAA;    // Send 10101010 pattern to Port 1
+        Delay(250);   // Wait
+        P1 = ~P1;     // Complement pattern (01010101)
+        Delay(250);   // Wait
+    }
+}
+
+void Delay(unsigned int time)
+{
+    int i, j;
+    for(i = 0; i < time; i++)
+        for(j = 0; j < 165; j++);  // Software delay
+}
+
